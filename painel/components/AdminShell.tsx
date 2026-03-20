@@ -5,7 +5,7 @@ import Sidebar from '@/components/Sidebar';
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isPublicPage = pathname === '/loja';
+  const isPublicPage = pathname === '/loja' || pathname === '/login';
 
   if (isPublicPage) {
     return <>{children}</>;

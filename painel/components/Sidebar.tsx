@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -74,6 +74,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [businessName, setBusinessName] = useState('Bot Bruna');
 
@@ -82,6 +83,12 @@ export default function Sidebar() {
       if (res.data?.businessName) setBusinessName(res.data.businessName);
     }).catch(() => {});
   }, []);
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  }
 
   return (
     <>
@@ -168,7 +175,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="px-7 py-5">
+        <div className="px-7 py-5 space-y-3">
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03]">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center shadow-sm">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -184,6 +191,16 @@ export default function Sidebar() {
               </p>
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium text-gray-400 hover:text-red-400 hover:bg-white/[0.04] transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+            </svg>
+            Sair
+          </button>
         </div>
       </aside>
     </>
