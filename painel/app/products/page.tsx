@@ -54,12 +54,11 @@ export default function ProductsPage() {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const res = await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await api.post('/upload', formData);
       return res.data.url;
-    } catch {
-      showToast('error', 'Erro ao enviar imagem.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Erro ao enviar imagem.';
+      showToast('error', msg);
       return null;
     }
   }
