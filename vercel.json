@@ -1,6 +1,0 @@
-{
-  "installCommand": "cd painel && npm install",
-  "buildCommand": "cd painel && npx prisma generate --schema=./prisma/schema.prisma && npm run build",
-  "outputDirectory": "painel/.next",
-  "framework": "nextjs"
-}
