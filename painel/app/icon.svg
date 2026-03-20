@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f43f5e"/>
+      <stop offset="100%" style="stop-color:#ec4899"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <g transform="translate(256,256)">
+    <!-- WhatsApp-style chat bubble -->
+    <path d="M-8,-120 C-75,-120 -130,-70 -130,-8 C-130,25 -115,54 -90,74 L-100,115 L-55,95 C-40,102 -25,106 -8,106 C59,106 114,56 114,-8 C114,-70 59,-120 -8,-120Z" fill="white" opacity="0.95"/>
+    <!-- Bot/star sparkle -->
+    <circle cx="-50" cy="-10" r="14" fill="#f43f5e"/>
+    <circle cx="-8" cy="-10" r="14" fill="#ec4899"/>
+    <circle cx="34" cy="-10" r="14" fill="#f43f5e"/>
+    <!-- Small sparkle stars -->
+    <path d="M90,-90 L96,-75 L112,-75 L99,-65 L103,-50 L90,-60 L77,-50 L81,-65 L68,-75 L84,-75Z" fill="white" opacity="0.8"/>
+    <path d="M-110,-85 L-106,-75 L-95,-75 L-104,-68 L-101,-57 L-110,-64 L-119,-57 L-116,-68 L-125,-75 L-114,-75Z" fill="white" opacity="0.6"/>
+  </g>
+</svg>
