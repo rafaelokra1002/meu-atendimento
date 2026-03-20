@@ -21,7 +21,7 @@ app.get('/bot/qr', async (_req, res) => {
     return res.json({ qr: null, message: 'Nenhum QR code disponível.' });
   }
   try {
-    const dataUrl = await QRCode.toDataURL(qr, { width: 300, margin: 2 });
+    const dataUrl = await QRCode.toDataURL(qr, { width: 400, margin: 3, errorCorrectionLevel: 'M' });
     res.json({ qr: dataUrl });
   } catch {
     res.status(500).json({ error: 'Erro ao gerar QR code.' });

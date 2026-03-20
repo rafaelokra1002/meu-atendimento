@@ -6,6 +6,7 @@ let client = null;
 let currentQR = null;
 let botStatus = 'disconnected'; // disconnected | connecting | connected
 let statusListeners = [];
+let qrAttempts = 0;
 
 function notifyStatus() {
   statusListeners.forEach((fn) => fn(botStatus, currentQR));
@@ -23,15 +24,28 @@ function createClient() {
     authStrategy: new LocalAuth(),
     puppeteer: {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--single-process',
+      ],
     },
+    qrMaxRetries: 5,
   });
 
   c.on('qr', (qr) => {
+    qrAttempts++;
     currentQR = qr;
     botStatus = 'connecting';
-    console.log('📱 QR Code gerado — escaneie pelo painel ou terminal.');
+    console.log(`📱 QR Code gerado (tentativa ${qrAttempts}/5) — escaneie pelo painel.`);
     notifyStatus();
+
+    if (qrAttempts >= 5) {
+      console.log('⚠️ QR Code expirou após 5 tentativas. Reinicie o bot.');
+      stopBot();
+    }
   });
 
   c.on('ready', () => {
@@ -104,6 +118,7 @@ async function startBot() {
 
   try {
     currentQR = null;
+    qrAttempts = 0;
     botStatus = 'connecting';
     notifyStatus();
 

@@ -47,7 +47,7 @@ export default function SettingsPage() {
     }
 
     pollBot();
-    pollRef.current = setInterval(pollBot, 3000);
+    pollRef.current = setInterval(pollBot, 5000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
@@ -291,7 +291,7 @@ export default function SettingsPage() {
 
           {/* QR Code area */}
           <div className="flex-shrink-0">
-            <div className={`w-[200px] h-[200px] rounded-2xl border-2 flex items-center justify-center overflow-hidden transition-all duration-300 ${
+            <div className={`w-[250px] h-[250px] rounded-2xl border-2 flex items-center justify-center overflow-hidden transition-all duration-300 ${
               qrCode ? 'border-rose-200 bg-white shadow-lg shadow-rose-100/40' : 'border-dashed border-gray-200 bg-gray-50/50'
             }`}>
               {qrCode ? (
