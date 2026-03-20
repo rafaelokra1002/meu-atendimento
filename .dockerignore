@@ -1,0 +1,8 @@
+node_modules
+painel
+.next
+.wwebjs_auth
+.wwebjs_cache
+.git
+.env
+*.log

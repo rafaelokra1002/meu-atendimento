@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.BOT_API_PORT || 3001;
+const PORT = process.env.PORT || process.env.BOT_API_PORT || 3001;
 
 // Status do bot
 app.get('/bot/status', (_req, res) => {
