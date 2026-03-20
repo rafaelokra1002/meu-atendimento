@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const QRCode = require('qrcode');
-const { startBot, stopBot, getStatus, getQR } = require('./botManager');
+const { startBot, stopBot, logoutBot, getStatus, getQR } = require('./botManager');
 
 const app = express();
 app.use(cors());
@@ -37,6 +37,12 @@ app.post('/bot/start', async (_req, res) => {
 // Desligar bot
 app.post('/bot/stop', async (_req, res) => {
   const result = await stopBot();
+  res.json(result);
+});
+
+// Desconectar dispositivo (logout + limpar sessão)
+app.post('/bot/logout', async (_req, res) => {
+  const result = await logoutBot();
   res.json(result);
 });
 

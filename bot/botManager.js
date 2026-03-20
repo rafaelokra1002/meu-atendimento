@@ -140,6 +140,26 @@ async function stopBot() {
   return { success: true, message: 'Bot desligado.' };
 }
 
+async function logoutBot() {
+  if (!client) {
+    return { success: false, message: 'Bot não está rodando.' };
+  }
+
+  try {
+    await client.logout();
+    await client.destroy();
+  } catch (error) {
+    console.error('Erro ao desconectar dispositivo:', error);
+    try { await client.destroy(); } catch {} 
+  }
+
+  client = null;
+  currentQR = null;
+  botStatus = 'disconnected';
+  notifyStatus();
+  return { success: true, message: 'Dispositivo desconectado. Escaneie um novo QR Code para conectar.' };
+}
+
 function getStatus() {
   return { status: botStatus, hasQR: !!currentQR };
 }
@@ -148,4 +168,4 @@ function getQR() {
   return currentQR;
 }
 
-module.exports = { startBot, stopBot, getStatus, getQR, onStatusChange };
+module.exports = { startBot, stopBot, logoutBot, getStatus, getQR, onStatusChange };

@@ -79,6 +79,36 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleLogoutBot() {
+    if (!confirm('Tem certeza que deseja desconectar o dispositivo? Você precisará escanear o QR Code novamente.')) return;
+    setBotLoading(true);
+    try {
+      await api.post('/bot/logout');
+      showToast('success', 'Dispositivo desconectado! Clique em "Conectar Novo Dispositivo" para gerar um novo QR Code.');
+      setBotStatus('disconnected');
+      setQrCode(null);
+    } catch {
+      showToast('error', 'Erro ao desconectar dispositivo.');
+    } finally {
+      setBotLoading(false);
+    }
+  }
+
+  async function handleReconnectBot() {
+    setBotLoading(true);
+    try {
+      // Primeiro faz logout para limpar sessão antiga
+      await api.post('/bot/logout').catch(() => {});
+      // Depois inicia o bot para gerar novo QR
+      await api.post('/bot/start');
+      showToast('success', 'Gerando novo QR Code... Aguarde!');
+    } catch {
+      showToast('error', 'Erro ao conectar novo dispositivo.');
+    } finally {
+      setBotLoading(false);
+    }
+  }
+
   async function fetchSettings() {
     try {
       const res = await api.get('/settings');
@@ -181,22 +211,38 @@ export default function SettingsPage() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {botStatus === 'connected' ? (
-                <button
-                  onClick={handleStopBot}
-                  disabled={botLoading}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-400 to-red-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-red-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
-                >
-                  {botLoading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
-                    </svg>
-                  )}
-                  Desligar Bot
-                </button>
+                <>
+                  <button
+                    onClick={handleStopBot}
+                    disabled={botLoading}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-400 to-red-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-red-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {botLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
+                      </svg>
+                    )}
+                    Desligar Bot
+                  </button>
+                  <button
+                    onClick={handleLogoutBot}
+                    disabled={botLoading}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-orange-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {botLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    )}
+                    Desconectar Dispositivo
+                  </button>
+                </>
               ) : botStatus === 'connecting' ? (
                 <button
                   onClick={handleStopBot}
@@ -209,20 +255,36 @@ export default function SettingsPage() {
                   Cancelar
                 </button>
               ) : (
-                <button
-                  onClick={handleStartBot}
-                  disabled={botLoading || botStatus === 'offline'}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
-                >
-                  {botLoading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
-                    </svg>
-                  )}
-                  Ligar Bot
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleStartBot}
+                    disabled={botLoading || botStatus === 'offline'}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {botLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
+                      </svg>
+                    )}
+                    Ligar Bot
+                  </button>
+                  <button
+                    onClick={handleReconnectBot}
+                    disabled={botLoading || botStatus === 'offline'}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-400 to-blue-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-blue-200/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+                  >
+                    {botLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                      </svg>
+                    )}
+                    Conectar Novo Dispositivo
+                  </button>
+                </div>
               )}
             </div>
           </div>
