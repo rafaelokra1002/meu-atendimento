@@ -1,0 +1,31 @@
+{
+  "name": "botbruna",
+  "version": "1.0.0",
+  "description": "Sistema de atendimento automático WhatsApp com painel administrativo",
+  "private": true,
+  "scripts": {
+    "bot": "node bot/index.js",
+    "painel": "cd painel && npm run dev",
+    "painel:build": "cd painel && npm run build",
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "logs": "pm2 logs",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate deploy",
+    "prisma:seed": "node prisma/seed.js",
+    "setup": "npm install && cd painel && npm install && cd .. && npx prisma generate",
+    "deploy": "npm run setup && npx prisma migrate deploy && npm run painel:build && npm run start"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.20.0"
+  }
+}
