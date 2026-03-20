@@ -1,8 +1,4 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { existsSync, mkdirSync } from 'fs';
-import path from 'path';
-import crypto from 'crypto';
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -17,23 +13,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Tipo de arquivo não permitido. Use JPG, PNG, WebP ou GIF.' }, { status: 400 });
   }
 
-  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxSize = 2 * 1024 * 1024; // 2MB
   if (file.size > maxSize) {
-    return NextResponse.json({ error: 'Arquivo muito grande. Máximo 5MB.' }, { status: 400 });
-  }
-
-  const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-  const safeExt = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext) ? ext : 'jpg';
-  const fileName = `${crypto.randomUUID()}.${safeExt}`;
-
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  if (!existsSync(uploadsDir)) {
-    mkdirSync(uploadsDir, { recursive: true });
+    return NextResponse.json({ error: 'Arquivo muito grande. Máximo 2MB.' }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  await writeFile(path.join(uploadsDir, fileName), buffer);
+  const base64 = buffer.toString('base64');
+  const dataUrl = `data:${file.type};base64,${base64}`;
 
-  return NextResponse.json({ url: `/uploads/${fileName}` });
+  return NextResponse.json({ url: dataUrl });
 }
