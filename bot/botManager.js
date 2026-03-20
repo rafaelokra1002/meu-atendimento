@@ -125,9 +125,18 @@ async function startBot() {
     notifyStatus();
 
     client = createClient();
-    await client.initialize();
-    console.log('🚀 Bot inicializado.');
-    return { success: true, message: 'Bot iniciado.' };
+    
+    // Inicializar em background (não bloqueia a resposta HTTP)
+    client.initialize().then(() => {
+      console.log('🚀 Bot inicializado.');
+    }).catch((error) => {
+      console.error('Erro ao iniciar bot:', error);
+      botStatus = 'disconnected';
+      client = null;
+      notifyStatus();
+    });
+
+    return { success: true, message: 'Bot iniciado! Aguarde o QR Code.' };
   } catch (error) {
     console.error('Erro ao iniciar bot:', error);
     botStatus = 'disconnected';
