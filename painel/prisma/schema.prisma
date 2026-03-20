@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Settings {
+  id             String  @id @default(uuid())
+  businessName   String  @default("Bot Bruna")
+  welcomeMsg     String
+  promotion      String?
+  whatsappNumber String  @default("")
+}
+
+model Service {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+}
+
+model Faq {
+  id       String @id @default(uuid())
+  question String
+  answer   String
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  price       Float
+  description String?
+  image       String?
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  from      String
+  name      String?
+  body      String
+  isBot     Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
