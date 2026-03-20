@@ -4,7 +4,7 @@ const { saveMessage } = require('./services/databaseService');
 
 let client = null;
 let currentQR = null;
-let botStatus = 'disconnected'; // disconnected | connecting | connected
+let botStatus = 'disconnected'; // disconnected | connecting | authenticated | connected
 let statusListeners = [];
 let qrAttempts = 0;
 
@@ -57,7 +57,9 @@ function createClient() {
 
   c.on('authenticated', () => {
     currentQR = null;
-    console.log('🔐 Autenticado com sucesso.');
+    botStatus = 'authenticated';
+    console.log('🔐 Autenticado com sucesso. Carregando conversas...');
+    notifyStatus();
   });
 
   // Interceptar sendMessage para salvar respostas do bot

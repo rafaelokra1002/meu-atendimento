@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import PageHeader from '@/components/PageHeader';
 import Toast from '@/components/Toast';
 
-type BotStatus = 'offline' | 'disconnected' | 'connecting' | 'connected';
+type BotStatus = 'offline' | 'disconnected' | 'connecting' | 'authenticated' | 'connected';
 
 export default function SettingsPage() {
   const [businessName, setBusinessName] = useState('');
@@ -39,6 +39,11 @@ export default function SettingsPage() {
           setQrCode(qrRes.data?.qr || null);
         } else {
           setQrCode(null);
+        }
+
+        // Se autenticado, poll mais rápido para pegar o 'connected'
+        if (s === 'authenticated') {
+          setTimeout(pollBot, 2000);
         }
       } catch {
         setBotStatus('offline');
@@ -190,6 +195,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3 p-4 rounded-xl bg-white/50 border border-rose-50">
               <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
                 botStatus === 'connected' ? 'bg-emerald-400 animate-pulse' :
+                botStatus === 'authenticated' ? 'bg-blue-400 animate-pulse' :
                 botStatus === 'connecting' ? 'bg-amber-400 animate-pulse' :
                 botStatus === 'offline' ? 'bg-gray-300' :
                 'bg-red-400'
@@ -197,12 +203,14 @@ export default function SettingsPage() {
               <div>
                 <span className="text-sm font-semibold text-gray-700">
                   {botStatus === 'connected' && '✅ Bot conectado'}
+                  {botStatus === 'authenticated' && '🔄 Autenticado! Carregando...'}
                   {botStatus === 'connecting' && '📱 Aguardando scan do QR Code...'}
                   {botStatus === 'disconnected' && '⚠️ Bot desconectado'}
                   {botStatus === 'offline' && '🔴 Servidor do bot offline'}
                 </span>
                 <p className="text-[11px] text-gray-400 mt-0.5">
                   {botStatus === 'connected' && 'O bot está recebendo e respondendo mensagens.'}
+                  {botStatus === 'authenticated' && 'QR escaneado com sucesso! Aguarde a conexão finalizar...'}
                   {botStatus === 'connecting' && 'Escaneie o QR Code com seu WhatsApp.'}
                   {botStatus === 'disconnected' && 'Clique em "Ligar Bot" para iniciar.'}
                   {botStatus === 'offline' && 'Certifique-se que o servidor do bot está rodando (npm run bot).'}
@@ -212,7 +220,12 @@ export default function SettingsPage() {
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3">
-              {botStatus === 'connected' ? (
+              {botStatus === 'authenticated' ? (
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-400 to-blue-500 text-white text-sm font-semibold rounded-xl">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Conectando ao WhatsApp...
+                </div>
+              ) : botStatus === 'connected' ? (
                 <>
                   <button
                     onClick={handleStopBot}
